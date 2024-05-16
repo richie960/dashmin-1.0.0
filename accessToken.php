@@ -1,9 +1,9 @@
 <?php
 //YOU MPESA API KEYS
-$consumerKey = "K0d48Bdrtuao2kqA6MlsEhExe6vW9xFt"; //Fill with your app Consumer Key
-$consumerSecret = "T4qOWNN6Ex89lTT9"; //Fill with your app Consumer Secret
+$consumerKey = "BTBovK34kbAGtCwkCDzWQ27t4nTyRqp3E3D4U1rs3ASFJL2N"; //Fill with your app Consumer Key
+$consumerSecret = "3COYovIfvhQ8kgg2xQmGAtVumxiSYr4e8Af1EWS4VGrky44EyKahJ3ird4NKBTyc"; //Fill with your app Consumer Secret
 //ACCESS TOKEN URL
-$access_token_url = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+$access_token_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
 $headers = ['Content-Type:application/json; charset=utf8'];
 $curl = curl_init($access_token_url);
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);

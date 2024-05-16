@@ -96,7 +96,7 @@ p {
 </head>
 <body>
     <h1>MPESA Callback Processing</h1>
-    <form action="" method="post">
+    <form action="stkpush.php" method="post">
         <label for="phone_number">Phone Number:</label>
         <input type="text" id="phone_number" name="phone_number" placeholder="eg. 0712345679"  required><br><br>
         

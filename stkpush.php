@@ -1,11 +1,11 @@
 <?php
 include 'accessToken.php';
 date_default_timezone_set('Africa/Nairobi');
-$processrequestUrl = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+$processrequestUrl = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 
-$callbackurl = 'https://kabaritacoltd.000webhostapp.com/kabarita/callback.php';
-$passkey = "3da26f11a8f1d70281011645bce7356644238a81013daa9a58a2bd2b30e6cfd1";
-$BusinessShortCode = '4118403';
+$callbackurl = 'https://d00a-105-163-0-138.ngrok-free.app/dashmin-1.0.0/callback.php';
+$passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+$BusinessShortCode = '174379';
 $Timestamp = date('YmdHis');
 
 // ENCRYPT DATA TO GET PASSWORD
@@ -17,7 +17,7 @@ $money = $_POST['amount'];
 $account_reference = $_POST['account_reference']; 
 
 $PartyA = $phone;
-$PartyB = '254722295457';
+$PartyB = '254746465349';
 $AccountReference = $account_reference;
 $TransactionDesc = 'STKPush';
 $Amount = $money;
@@ -56,7 +56,7 @@ if ($curl_response === false) {
     error_log("CURL Error: " . curl_error($curl));
     
     // Redirect to index.php with an error message
-    header("Location: index.php?error=CURL Error: " . curl_error($curl));
+    header("Location: stkpushhtml.php?error=CURL Error: " . curl_error($curl));
     exit(); // Exit to prevent further output
 } else {
     // ECHO RESPONSE
@@ -70,14 +70,14 @@ if ($curl_response === false) {
 
             if ($ResponseCode == "0") {
                 // Redirect to loader.php with CheckoutRequestID parameter
-                header("Location: index.php?message=Transaction For HouseNumber: $account_reference  has been sent and is under way....Enter your pin please.");
+                header("Location: stkpushhtml.php?message=Transaction For HouseNumber: $account_reference  has been sent and is under way....Enter your pin please.");
                 exit(); // Exit to prevent further output
             } else {
                 // Log the error for debugging purposes
                 error_log("Error response code: " . $ResponseCode);
                 
                 // Redirect to index.php with an error message
-                header("Location: index.php?message=Error response code: " . $ResponseCode);
+                header("Location: stkpushhtml.php?message=Error response code: " . $ResponseCode);
                 exit(); // Exit to prevent further output
             }
         } else {
@@ -85,7 +85,7 @@ if ($curl_response === false) {
             error_log("Error: CheckoutRequestID or ResponseCode is missing in the JSON response.");
             
             // Redirect to index.php with an error message
-            header("Location: index.php?message=Error: CheckoutRequestID or ResponseCode is missing in the JSON response.");
+            header("Location: stkpushhtml.php?message=Error: CheckoutRequestID or ResponseCode is missing in the JSON response.");
             exit(); // Exit to prevent further output
         }
     } else {
@@ -93,7 +93,7 @@ if ($curl_response === false) {
         error_log("Error decoding JSON response.");
         
         // Redirect to index.php with an error message
-        header("Location: index.php?message=Error decoding JSON response.");
+        header("Location: stkpushhtml.php?message=Error decoding JSON response.");
         exit(); // Exit to prevent further output
     }
 }

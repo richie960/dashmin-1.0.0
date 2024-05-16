@@ -38,7 +38,7 @@ echo "FirstName: " . $FirstName . "<br>";
 
 
 // Prepare and execute the SQL query
-$query = "INSERT INTO transactions (MpesaReceiptNumber, TransTime, Amount, BusinessShortCode,adno, PhoneNumber, FirstName ) 
+$query = "INSERT INTO studentfees (MpesaReceiptNumber, TransTime, Amount, BusinessShortCode,adno, PhoneNumber, FirstName ) 
           VALUES (?, ?, ?, ?, ?, ?, ?)";
 $stmt = mysqli_prepare($db, $query);
 
