@@ -3,7 +3,7 @@ include 'accessToken.php';
 date_default_timezone_set('Africa/Nairobi');
 $processrequestUrl = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 
-$callbackurl = 'https://d00a-105-163-0-138.ngrok-free.app/dashmin-1.0.0/callback.php';
+$callbackurl = 'https://8f2d-105-163-1-149.ngrok-free.app/dashmin-1.0.0/callback.php';
 $passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
 $BusinessShortCode = '174379';
 $Timestamp = date('YmdHis');
