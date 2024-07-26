@@ -179,7 +179,7 @@
             </nav>
             <!-- Navbar End -->
 
-
+<?php include 'card.php'?>
             <!-- Sale & Revenue Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
@@ -187,8 +187,8 @@
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                             <i class="fa fa-chart-line fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">School population</p>
-                                <h6 class="mb-0">1234</h6>
+                                <p class="mb-2">Students</p>
+                                <h6 class="mb-0"><?php  echo $totalStudents ?></h6>
                             </div>
                         </div>
                     </div>
@@ -197,7 +197,7 @@
                             <i class="fa fa-chart-bar fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">paid total</p>
-                                <h6 class="mb-0">1234</h6>
+                                <h6 class="mb-0"><?php echo $totalAmount ?></h6>
                             </div>
                         </div>
                     </div>
@@ -206,7 +206,7 @@
                             <i class="fa fa-chart-area fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">unpaid total</p>
-                                <h6 class="mb-0">1234</h6>
+                                <h6 class="mb-0"><?php  echo $totalBalance ?></h6>
                             </div>
                         </div>
                     </div>
@@ -214,8 +214,8 @@
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                             <i class="fa fa-chart-pie fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">Sitting for exams</p>
-                                <h6 class="mb-0">1234</h6>
+                                <p class="mb-2">Cleared</p>
+                                <h6 class="mb-0"><?php echo $countStatusOne?></h6>
                             </div>
                         </div>
                     </div>
@@ -223,37 +223,56 @@
             </div>
             <!-- Sale & Revenue End -->
             <?php include 'gg.php'; ?>
+            <?php include 'status.php'?>
 
+<?php include 'updatenames.php' ?>
   <div>
-
-  </div>
   <style>
         .hidden-row {
             display: none;
         }
-    </style>     
-            <!-- Sales Chart End -->
-
-<?php include 'status.php'; ?>
-<div class="container-fluid pt-4 px-4">
+        .disabled-btn {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .message {
+            display: none;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid pt-4 px-4">
         <div class="bg-light text-center rounded p-4">
             <div class="d-flex align-items-center justify-content-between mb-4">
-                <h6 class="mb-0">Unpaid Fees</h6>
+                <h6 class="mb-0">TRANSACTION DATA</h6>
                 <div>
                     <button id="showMoreBtn" class="btn btn-sm btn-primary">Show More</button>
                     <button id="showLessBtn" class="btn btn-sm btn-secondary" style="display: none;">Show Less</button>
+                    <button id="sendMultipleRemindersBtn" class="btn btn-sm btn-primary">Send Multiple Reminders</button>
                 </div>
             </div>
+            <div id="message" class="message"></div>
             <div class="table-responsive">
                 <table class="table text-start align-middle table-bordered table-hover mb-0">
                     <thead>
                         <tr class="text-dark">
-                            <th scope="col"><input class="form-check-input" type="checkbox"></th>
+                            <th scope="col"><input id="selectAll" class="form-check-input" type="checkbox"></th>
                             <th scope="col">Date</th>
                             <th scope="col">Invoice</th>
                             <th scope="col">Student</th>
+                            <th scope="col">ADNO</th>
                             <th scope="col">Amount</th>
-                            <th scope="col">Status</th>
+                            <th scope="col">Term</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -261,15 +280,16 @@
                         <?php include 'fetch_studentfees.php'; ?>
                         <?php foreach ($feesData as $index => $fee): ?>
                             <tr class="<?php echo $index >= 10 ? 'hidden-row' : ''; ?>">
-                                <td><input class="form-check-input" type="checkbox"></td>
+                                <td><input class="form-check-input" type="checkbox" data-adno="<?php echo $fee['adno']; ?>" <?php echo ($fee['status'] == 1 || (strtotime($fee['last_reminder']) + 24*60*60 > time())) ? 'disabled' : ''; ?>></td>
                                 <td><?php echo htmlspecialchars($fee['payment_date']); ?></td>
                                 <td><?php echo htmlspecialchars($fee['MpesaReceiptNumber']); ?></td>
                                 <td><?php echo htmlspecialchars($fee['firstname']); ?></td>
+                                <td><?php echo htmlspecialchars($fee['adno']); ?></td>
                                 <td><?php echo htmlspecialchars($fee['Amount']); ?></td>
-                                <td><?php echo htmlspecialchars($fee['status']); ?></td>
+                                <td><?php echo htmlspecialchars($fee['term']); ?></td>
                                 <td>
-                                    <?php if ($fee['status'] == 1): ?>
-                                        <button class="btn btn-sm btn-primary action-btn" data-adno="<?php echo $fee['adno']; ?>">Send Reminder</button>
+                                    <?php if ($fee['status'] != 1): ?>
+                                        <button class="btn btn-sm btn-primary action-btn" data-adno="<?php echo $fee['adno']; ?>" <?php echo (strtotime($fee['last_reminder']) + 24*60*60 > time()) ? 'disabled' : ''; ?>>Send Reminder</button>
                                     <?php else: ?>
                                         <button class="btn btn-sm btn-secondary" disabled>Completed Payment</button>
                                     <?php endif; ?>
@@ -285,11 +305,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const buttons = document.querySelectorAll('.action-btn');
+            const sendMultipleRemindersBtn = document.getElementById('sendMultipleRemindersBtn');
+            const messageDiv = document.getElementById('message');
+            const selectAllCheckbox = document.getElementById('selectAll');
 
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
                     const adno = button.getAttribute('data-adno');
-
                     fetch('send_reminder.php', {
                         method: 'POST',
                         headers: {
@@ -301,16 +323,81 @@
                     .then(data => {
                         if (data.success) {
                             button.disabled = true;
-                            button.textContent = 'Completed Payment';
+                            button.textContent = 'Reminder Sent';
                             button.classList.remove('btn-primary');
                             button.classList.add('btn-secondary');
+                            showMessage('Reminder sent successfully', 'success');
                         } else {
-                            alert('Failed to send reminder');
+                            showMessage(data.message || 'Failed to send reminder', 'error');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
+                        showMessage('An error occurred while sending the reminder', 'error');
                     });
+                });
+            });
+
+            sendMultipleRemindersBtn.addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]:checked');
+                const adnos = [];
+                checkboxes.forEach(checkbox => {
+                    if (!checkbox.disabled) {
+                        adnos.push(checkbox.getAttribute('data-adno'));
+                    }
+                });
+
+                if (adnos.length > 0) {
+                    fetch('send_multiple_reminders.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ adnos: adnos })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            checkboxes.forEach(checkbox => {
+                                checkbox.disabled = true;
+                                const row = checkbox.closest('tr');
+                                const button = row.querySelector('.action-btn');
+                                if (button) {
+                                    button.disabled = true;
+                                    button.textContent = 'Reminder Sent';
+                                    button.classList.remove('btn-primary');
+                                    button.classList.add('btn-secondary');
+                                }
+                            });
+                            showMessage('Reminders sent successfully', 'success');
+                        } else {
+                            showMessage(data.message || 'Failed to send reminders', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showMessage('An error occurred while sending the reminders', 'error');
+                    });
+                } else {
+                    showMessage('No eligible reminders to send', 'error');
+                }
+            });
+
+            function showMessage(message, type) {
+                messageDiv.textContent = message;
+                messageDiv.className = 'message ' + type;
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+
+            selectAllCheckbox.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    if (!checkbox.disabled) {
+                        checkbox.checked = selectAllCheckbox.checked;
+                    }
                 });
             });
 

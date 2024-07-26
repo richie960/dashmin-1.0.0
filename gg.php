@@ -13,7 +13,7 @@
             justify-content: space-between;
             gap: 20px;
             margin: 20px auto;
-            max-width: 1000px; /* Adjust max-width as needed */
+            max-width: 8888px; /* Adjust max-width as needed */
         }
         .chart-container {
             flex: 1 1 calc(50% - 10px);
