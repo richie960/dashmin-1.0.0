@@ -46,12 +46,6 @@ foreach ($adnos as $adno) {
             $cooldownPeriod = 24 * 60 * 60; // 24 hours in seconds
             $currentTimestamp = time();
 
-            // Debug output
-            echo "Processing adno: $adno\n";
-            echo "Last Reminder Timestamp: $lastReminder\n";
-            echo "Current Timestamp: $currentTimestamp\n";
-            echo "Cooldown Period: $cooldownPeriod\n";
-
             // Check if cooldown period is over or if last_reminder is '0000-00-00 00:00:00'
             if ($status != 1 && ($lastReminder == '0000-00-00 00:00:00' || ($currentTimestamp - strtotime($lastReminder) > $cooldownPeriod))) {
                 // Calculate balance for the student
@@ -79,14 +73,11 @@ foreach ($adnos as $adno) {
                     $smsUrl .= '&shortcode=' . urlencode($shortcode);
                     $smsUrl .= '&message=' . urlencode($message);
 
-                    // Debug SMS URL
-                    echo "SMS URL: $smsUrl\n";
-
                     $responseContent = file_get_contents($smsUrl);
                     $responseObj = json_decode($responseContent, true);
 
                     // Check if SMS was sent successfully
-                    if ($responseObj && isset($responseObj['success']) && $responseObj['success']) {
+                    if ($responseObj && isset($responseObj['responses'][0]['response-code']) && $responseObj['responses'][0]['response-code'] == 200) {
                         $response[] = ["adno" => $adno, "status" => "success", "balance" => $balance];
                         // Update last reminder timestamp
                         $sqlUpdate = "UPDATE studentfees SET last_reminder = NOW() WHERE adno = ?";

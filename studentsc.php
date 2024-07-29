@@ -8,8 +8,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <style>
         .profile-image {
-            width: 150px;
-            height: 150px;
+            width: 250px;
+            height: 250px;
             object-fit: cover;
             border: 1px solid #ccc;
         }
@@ -25,18 +25,20 @@
 <body>
 <div class="container">
     <h1 class="mt-5">Student Management</h1>
+    <button class="btn btn-success mb-3" id="upgradeAllButton">Upgrade All Students</button>
     <div class="form-group">
         <label for="classDropdown">Select Class:</label>
         <select class="form-control" id="classDropdown">
+        <option value="classnine">Playgroup</option>
+        <option value="classseven">PP1</option>
+            <option value="classeight">PP2</option>
             <option value="classone">Class 1</option>
             <option value="classtwo">Class 2</option>
             <option value="classthree">Class 3</option>
             <option value="classfour">Class 4</option>
             <option value="classfive">Class 5</option>
             <option value="classsix">Class 6</option>
-            <option value="classseven">PP1</option>
-            <option value="classeight">PP2</option>
-            <option value="classnine">Playgroup</option>
+            
         </select>
     </div>
     <div class="form-group">
@@ -106,6 +108,7 @@
                         <input type="hidden" id="paymentAdno">
                         <button type="submit" class="btn btn-primary">Submit</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-success" id="upgradeButton">Upgrade</button>
                     </form>
                 </div>
             </div>
@@ -151,7 +154,7 @@ $(document).ready(function() {
     // Function to load students for a given class
     function loadStudents(className, adno = '') {
         $.ajax({
-            url: 'fetch_students.php',
+            url: '../fetch_students.php',
             type: 'POST',
             data: { class: className, adno: adno },
             dataType: 'json',
@@ -176,13 +179,13 @@ $(document).ready(function() {
     // Function to reload student details and fees table
     function loadStudentDetails(adno) {
         $.ajax({
-            url: 'fetch_student_details.php',
+            url: '../fetch_student_details.php',
             type: 'POST',
             data: { adno: adno },
             dataType: 'json',
             success: function(response) {
                 var profileImagePath = response.profile.profile_image;
-                $('#profileImage').attr('src', profileImagePath);
+                $('#profileImage').attr('src',profileImagePath);
                 var profile = '<p><strong>Adno:</strong> ' + response.profile.adno + '</p>';
                 profile += '<p><strong>First Name:</strong> ' + response.profile.firstname + '</p>';
                 profile += '<p><strong>Last Name:</strong> ' + response.profile.lastname + '</p>';
@@ -217,8 +220,16 @@ $(document).ready(function() {
                 } else if (lastTerm === 'term2fees') {
                     termsOptions += '<option value="term2fees">Term 2</option>';
                     termsOptions += '<option value="term3fees">Term 3</option>';
-                } else if (lastTerm === 'term3fees' || lastTerm === '') {
+                } else if (lastTerm === 'term3fees') {
+                    termsOptions += '<option value="term1fees">Term 1</option>';
+                    termsOptions += '<option value="term2fees">Term 2</option>';
                     termsOptions += '<option value="term3fees">Term 3</option>';
+
+                }
+                    else if (lastTerm === '') {
+                    termsOptions += '<option value="term1fees">Term 1</option>';
+                  
+                
                 } else {
                     termsOptions += '<option value="term1fees">Term 1</option>';
                 }
@@ -276,13 +287,14 @@ $(document).ready(function() {
         var adno = $('#paymentAdno').val(); // Ensure adno is correctly retrieved
 
         $.ajax({
-            url: 'update_payment.php',
+            url: '../update_payment.php',
             type: 'POST',
             data: { id: id, term: term, amount: amount },
             success: function(response) {
                 $('#editModal').modal('hide');
+                $('#studentModal').modal('hide');
                 var selectedClass = $('#classDropdown').val();
-                loadStudents(selectedClass, adno); // Reload students table
+                loadStudents(selectedClass); // Reload students table
                 loadStudentDetails(adno); // Refresh student details to show updated payment info
             },
             error: function(xhr, status, error) {
@@ -300,7 +312,7 @@ $(document).ready(function() {
         var amount = $('#paymentAmount').val();
 
         $.ajax({
-            url: 'add_payment.php',
+            url: '../add_payment.php',
             type: 'POST',
             data: { adno: adno, class: className, term: term, amount: amount },
             success: function(response) {
@@ -315,9 +327,47 @@ $(document).ready(function() {
         });
     });
 
-    // Close both modals when edit modal is closed
+    // Close both modals when edit modal is closed and reload student modal
     $('#editModal').on('hidden.bs.modal', function () {
+        var adno = $('#paymentAdno').val();
         $('#studentModal').modal('hide');
+        loadStudentDetails(adno); // Refresh student details to show updated payment info
+    });
+
+    // Handle upgrade button click in the dashboard
+    $('#upgradeAllButton').click(function() {
+        var selectedClass = $('#classDropdown').val();
+        $.ajax({
+            url: '../upgrade_students.php',
+            type: 'POST',
+            data: {  class: selectedClass },
+            success: function(response) {
+             
+                loadStudents(selectedClass); // Reload students table
+            },
+            error: function(xhr, status, error) {
+                console.error("Error upgrading students:", error);
+            }
+        });
+    });
+
+    // Handle upgrade button click in the modal
+    $('#upgradeButton').click(function() {
+        var adno = $('#paymentAdno').val(); // Retrieve adno from hidden field
+        var selectedClass = $('#classDropdown').val(); // Retrieve selected class
+        $.ajax({
+            url: '../upgrade_student.php',
+            type: 'POST',
+            data: { adno: adno, class: selectedClass }, // Send selected class along with adno
+            success: function(response) {
+                loadStudents(selectedClass); // Reload students table
+                loadStudentDetails(adno); // Refresh student details to show updated class
+                $('#studentModal').modal('hide');
+            },
+            error: function(xhr, status, error) {
+                console.error("Error upgrading student:", error);
+            }
+        });
     });
 });
 </script>

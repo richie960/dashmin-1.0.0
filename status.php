@@ -22,8 +22,8 @@ if ($result->num_rows > 0) {
         $class = $row['class'];
         $term = $row['term'];
 
-        // Calculate total amount for the student
-        $totalSql = "SELECT SUM(Amount) as total_amount FROM studentfees WHERE adno = '$adno'";
+        // Calculate total amount for the student for the specific term
+        $totalSql = "SELECT SUM(Amount) as total_amount FROM studentfees WHERE adno = '$adno' AND term = '$term'";
         $totalResult = $conn->query($totalSql);
         $totalRow = $totalResult->fetch_assoc();
         $totalAmount = $totalRow['total_amount'];
@@ -41,16 +41,17 @@ if ($result->num_rows > 0) {
             // Compare amounts and update status
             if ($totalAmount >= $classAmount) {
                 $status = 1;
+                echo "Record updated successfully for adno: $adno<br>";
             } else {
                 $status = 0;
             }
 
             // Update the student's status
-            $updateSql = "UPDATE studentfees SET status = $status WHERE adno = '$adno'";
+            $updateSql = "UPDATE studentfees SET status = $status WHERE adno = '$adno' AND term = '$term'";
             if ($conn->query($updateSql) === TRUE) {
-              //  echo "Record updated successfully for adno: $adno<br>";
+              //  echo "Status updated for adno: $adno<br>";
             } else {
-               // echo "Error updating record for adno: $adno - " . $conn->error . "<br>";
+                echo "Error updating record for adno: $adno - " . $conn->error . "<br>";
             }
         }
     }
