@@ -25,7 +25,7 @@ if ($resultProfile->num_rows > 0) {
 }
 
 // Fetch student payment history
-$sqlFees = "SELECT id,class, term, Amount, payment_date FROM studentfees WHERE adno = ?";
+$sqlFees = "SELECT id,class, term,MpesaReceiptNumber, Amount, payment_date FROM studentfees WHERE adno = ?";
 $stmtFees = $conn->prepare($sqlFees);
 $stmtFees->bind_param("s", $adno);
 $stmtFees->execute();

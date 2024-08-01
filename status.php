@@ -41,7 +41,7 @@ if ($result->num_rows > 0) {
             // Compare amounts and update status
             if ($totalAmount >= $classAmount) {
                 $status = 1;
-                echo "Record updated successfully for adno: $adno<br>";
+              //  echo "Record updated successfully for adno: $adno<br>";
             } else {
                 $status = 0;
             }
@@ -51,12 +51,12 @@ if ($result->num_rows > 0) {
             if ($conn->query($updateSql) === TRUE) {
               //  echo "Status updated for adno: $adno<br>";
             } else {
-                echo "Error updating record for adno: $adno - " . $conn->error . "<br>";
+              //  echo "Error updating record for adno: $adno - " . $conn->error . "<br>";
             }
         }
     }
 } else {
-    echo "No records found in student table.";
+    //echo "No records found in student table.";
 }
 
 $conn->close();

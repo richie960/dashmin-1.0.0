@@ -15,6 +15,7 @@ if ($conn->connect_error) {
 $adno = $_POST['adno'];
 $class = $_POST['class'];
 $current_term = $_POST['term'];
+$invoice=$_POST['invoice'];
 $new_amount = $_POST['amount'];
 
 // Determine the previous term based on the current term
@@ -102,26 +103,54 @@ if ($result->num_rows > 0) {
 $excess_payment_current = $net_payment - $total_fee_current;
 
 // Insert the new payment amount for the current term
-$sql = "INSERT INTO studentfees (adno, class, term, Amount, payment_date) VALUES (?, ?, ?, ?, NOW())";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ssss", $adno, $class, $current_term, $new_amount);
-$stmt->execute();
+$checkSql = "SELECT COUNT(*) FROM studentfees WHERE MpesaReceiptNumber = ?";
+$checkStmt = $conn->prepare($checkSql);
+$checkStmt->bind_param("s", $invoice);
+$checkStmt->execute();
+$checkStmt->bind_result($count);
+$checkStmt->fetch();
+$checkStmt->close();
+
+if ($count > 0) {
+    // Invoice number already exists, return an error message
+    echo json_encode(["status" => "error", "message" => "Invoice number already exists"]);
+} else {
+    // Invoice number doesn't exist, proceed with the insertion
+   
+  
+
+    if ($balance_previous < 0 && !$processed_exists) {
+        $sql = "INSERT INTO studentfees (adno, class, term, Amount, payment_date, processed) VALUES (?, ?, ?, ?, NOW(), TRUE)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssss", $adno, $class, $current_term, $balance_previous);
+        $stmt->execute();
+    }
+    
+    // Update the 'complete' column to 1 for all rows of the previous term for the specific adno and class
+    if ($previous_term) {
+        $sql = "UPDATE studentfees SET complete = 1 WHERE adno = ? AND class = ? AND term = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $adno, $class, $previous_term);
+        $stmt->execute();
+    }
+
+
+    $sql = "INSERT INTO studentfees (adno, class, term, MpesaReceiptNumber, Amount, payment_date) VALUES (?, ?, ?, ?, ?, NOW())";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssss", $adno, $class, $current_term, $invoice, $new_amount);
+    
+
+    if ($stmt->execute()) {
+        echo json_encode(["status" => "success", "message" => "Payment added successfully"]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Error adding payment"]);
+    }
+    $stmt->close();
+}
+
 
 // Insert excess payment for the current term if applicable
-if ($balance_previous < 0 && !$processed_exists) {
-    $sql = "INSERT INTO studentfees (adno, class, term, Amount, payment_date, processed) VALUES (?, ?, ?, ?, NOW(), TRUE)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $adno, $class, $current_term, $balance_previous);
-    $stmt->execute();
-}
 
-// Update the 'complete' column to 1 for all rows of the previous term for the specific adno and class
-if ($previous_term) {
-    $sql = "UPDATE studentfees SET complete = 1 WHERE adno = ? AND class = ? AND term = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $adno, $class, $previous_term);
-    $stmt->execute();
-}
 
 echo json_encode(['success' => true]);
 

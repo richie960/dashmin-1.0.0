@@ -32,7 +32,7 @@
             border-radius: 5px;
         }
         input[type="submit"] {
-            background-color: #4CAF50;
+            background-color: blue;
             color: white;
             border: none;
         }
@@ -42,8 +42,8 @@
     <div class="container">
         <h1>Generate Student Financial Report</h1>
         <form action="../reports.php" method="post">
-            <label for="adno">Admission Number (optional):</label>
-            <input type="text" id="adno" name="adno" placeholder="Enter admission number if specific report needed">
+            <label for="adno">Admission Number :</label>
+            <input type="text" id="adno" name="adno" placeholder="Enter admission number if specific report needed" required>
             <input type="submit" value="Generate Report">
         </form>
     </div>

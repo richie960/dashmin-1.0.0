@@ -20,6 +20,10 @@
         .profile-details img {
             margin-right: 20px;
         }
+         /* Custom class for wider modal */
+         .modal-lg-custom {
+            max-width: 80%; /* Adjust the width as needed */
+        }
     </style>
 </head>
 <body>
@@ -63,7 +67,7 @@
 
     <!-- Modal for Viewing and Adding Payment -->
     <div class="modal fade" id="studentModal" tabindex="-1" role="dialog" aria-labelledby="studentModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg-custom" role="document"> <!-- Applied custom class here -->
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="studentModalLabel">Student Details</h5>
@@ -84,6 +88,7 @@
                             <tr>
                                 <th>Class</th>
                                 <th>Term</th>
+                                <th>Invoice</th>
                                 <th>Amount</th>
                                 <th>Payment Date</th>
                                 <th>Action</th>
@@ -102,8 +107,12 @@
                             <select class="form-control" id="paymentTerm"></select>
                         </div>
                         <div class="form-group">
+                            <label for="invoice">invoice</label>
+                            <input type="varchar" class="form-control" id="invoice" required>
+                        </div>
+                        <div class="form-group">
                             <label for="paymentAmount">Amount</label>
-                            <input type="number" class="form-control" id="paymentAmount">
+                            <input type="number" class="form-control" id="paymentAmount" required>
                         </div>
                         <input type="hidden" id="paymentAdno">
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -137,7 +146,7 @@
                         </div>
                         <div class="form-group">
                             <label for="editPaymentAmount">Amount</label>
-                            <input type="number" class="form-control" id="editPaymentAmount">
+                            <input type="number" class="form-control" id="editPaymentAmount" required>
                         </div>
                         <input type="hidden" id="editPaymentId">
                         <button type="submit" class="btn btn-primary">Save changes</button>
@@ -204,8 +213,10 @@ $(document).ready(function() {
                     feesRows += '<tr>';
                     feesRows += '<td>' + fee.class + '</td>';
                     feesRows += '<td>' + fee.term + '</td>';
+                    feesRows += '<td>' + fee.MpesaReceiptNumber	 + '</td>';
                     feesRows += '<td>' + fee.Amount + '</td>';
                     feesRows += '<td>' + fee.payment_date + '</td>';
+
                     feesRows += '<td><button class="btn btn-warning btn-sm editFee" data-id="' + fee.id + '" data-class="' + fee.class + '" data-term="' + fee.term + '" data-amount="' + fee.Amount + '">Edit</button></td>';
                     feesRows += '</tr>';
                     lastTerm = fee.term; // Store the last term
@@ -306,15 +317,17 @@ $(document).ready(function() {
     // Handle form submission for new payment
     $('#newPaymentForm').submit(function(event) {
         event.preventDefault();
+
         var adno = $('#paymentAdno').val(); // Retrieve adno from hidden field
         var className = $('#paymentClass').val(); // Retrieve class from the form field
         var term = $('#paymentTerm').val();
+        var invoice = $('#invoice').val();
         var amount = $('#paymentAmount').val();
 
         $.ajax({
             url: '../add_payment.php',
             type: 'POST',
-            data: { adno: adno, class: className, term: term, amount: amount },
+            data: { adno: adno, class: className, term: term, amount: amount ,invoice: invoice},
             success: function(response) {
                 $('#studentModal').modal('hide');
                 var selectedClass = $('#classDropdown').val();
@@ -331,6 +344,7 @@ $(document).ready(function() {
     $('#editModal').on('hidden.bs.modal', function () {
         var adno = $('#paymentAdno').val();
         $('#studentModal').modal('hide');
+        
         loadStudentDetails(adno); // Refresh student details to show updated payment info
     });
 
@@ -342,7 +356,7 @@ $(document).ready(function() {
             type: 'POST',
             data: {  class: selectedClass },
             success: function(response) {
-             
+                loadStudentDetails(adno);
                 loadStudents(selectedClass); // Reload students table
             },
             error: function(xhr, status, error) {

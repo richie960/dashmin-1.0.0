@@ -71,7 +71,6 @@ function generateStudentReport($db, $adno = null) {
             if (!empty($imagePath) && file_exists($imagePath)) {
                 $pdf->Image($imagePath, 160, 30, 30, 30, '', '', '', false, 300, '', false, false, 1, false, false, false);
             }
-            
 
             // Move to the left of the image for student details
             $pdf->SetXY(20, 30); // Adjust X position for details
@@ -86,7 +85,7 @@ function generateStudentReport($db, $adno = null) {
             $pdf->Ln(10);
 
             // Query to fetch student transactions
-            $sqlTransactions = "SELECT * FROM studentfees WHERE adno = '$adno' AND complete is NULL";
+            $sqlTransactions = "SELECT * FROM studentfees WHERE adno = '$adno' AND complete IS NULL";
             $resultTransactions = $db->query($sqlTransactions);
 
             if ($resultTransactions->num_rows > 0) {
@@ -108,17 +107,33 @@ function generateStudentReport($db, $adno = null) {
                 // Data rows
                 $totalAmount = 0;
                 while ($transaction = $resultTransactions->fetch_assoc()) {
-                    $pdf->Cell(30, 6, $transaction['class'], 1);
-                    $pdf->Cell(30, 6, $transaction['term'], 1);
+                    $classTable = $transaction['class'];
+                    $term = $transaction['term'];
+                    
+                    $pdf->Cell(30, 6, $classTable, 1);
+                    $pdf->Cell(30, 6, $term, 1);
                     $pdf->Cell(30, 6, $transaction['Amount'], 1);
                     $pdf->Cell(40, 6, $transaction['payment_date'], 1);
                     $pdf->Ln();
                     $totalAmount += $transaction['Amount'];
                 }
 
-                // Balance
-                $balanceMessage = $totalAmount >= 0 ? "Total Paid: " . $totalAmount : "Balance Needed: " . abs($totalAmount);
+                // Fetch the total fee for the current term
+                $sql = "SELECT $term FROM $classTable LIMIT 1";
+                $result = $db->query($sql);
+                if ($result->num_rows > 0) {
+                    $row = $result->fetch_assoc();
+                    $total_fee_current = $row[$term];
+                }
+
+                // Calculate balance
+                $balanceMessage1= "School_Fees :".$total_fee_current ;
+                $pdf->Cell(0, 10, $balanceMessage1, 0, 1, 'R');
+                $balanceMessage1= "Total_paid :".$totalAmount  ;
+                $pdf->Cell(0, 10, $balanceMessage1, 0, 1, 'R');
+                $balanceMessage = $totalAmount >= $total_fee_current ? "Balance_Paid: " . $totalAmount : "Balance Needed: " . ($total_fee_current - $totalAmount);
                 $pdf->Cell(0, 10, $balanceMessage, 0, 1, 'R');
+             
             } else {
                 $pdf->Cell(0, 0, 'No transactions found.', 0, 1, 'L');
             }
