@@ -70,6 +70,8 @@ if ($resultStudent->num_rows > 0) {
         $sqlInsertBalance = "INSERT INTO studentfees (adno, class, term, Amount, payment_date) VALUES ('$adno', '$nextClassName', 'term1fees', '$balance', NOW())";
         $db->query($sqlInsertBalance);
 
+        $sqlUpdateCompleted = "UPDATE studentfees SET complete = 1 WHERE adno = '$adno' AND class = '$selectedClass' AND term = 'term3fees'";
+        $db->query($sqlUpdateCompleted);
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'failure', 'message' => 'Student has not made any payments for term3fees']);

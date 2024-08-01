@@ -54,6 +54,20 @@ function generateStudentReport($db, $adno = null) {
     // Add a page
     $pdf->AddPage();
 
+    // Define class name mapping
+    $classNameMapping = array(
+        "classnine" => "Playgroup",
+        "classeight" => "PP1",
+        "classseven" => "PP2",
+        "classsix"=> "Grade_six",
+        "classfive"=>"Grade_five",
+        "classfour"=>"Grade_four",
+        "classthree"=>"Grade_three",
+        "classtwo"=>"Grade_two",
+        "classone"=>"Grade_one"
+
+    );
+
     // Query to fetch student details
     $sqlStudent = "SELECT * FROM students";
     if ($adno) {
@@ -78,9 +92,13 @@ function generateStudentReport($db, $adno = null) {
             $pdf->SetFont('dejavusans', 'B', 12);
             $pdf->Cell(0, 0, 'Student Details', 0, 1, 'L');
             $pdf->SetFont('dejavusans', '', 10);
+
+            // Replace class name based on mapping
+            $classDisplayName = isset($classNameMapping[$student['class']]) ? $classNameMapping[$student['class']] : $student['class'];
+
             $pdf->Cell(0, 0, "Adno: " . $student['adno'], 0, 1, 'L');
             $pdf->Cell(0, 0, "Name: " . $student['firstname'] . " " . $student['lastname'], 0, 1, 'L');
-            $pdf->Cell(0, 0, "Class: " . $student['class'], 0, 1, 'L');
+            $pdf->Cell(0, 0, "Class: " . $classDisplayName, 0, 1, 'L');
             $pdf->Cell(0, 0, "Phone Number: " . $student['Phonenumber'], 0, 1, 'L');
             $pdf->Ln(10);
 
@@ -100,6 +118,7 @@ function generateStudentReport($db, $adno = null) {
                 // Column headers
                 $pdf->Cell(30, 7, 'Class', 1, 0, 'C', 1);
                 $pdf->Cell(30, 7, 'Term', 1, 0, 'C', 1);
+                $pdf->Cell(30, 7, 'Inv_no', 1, 0, 'C', 1);
                 $pdf->Cell(30, 7, 'Amount', 1, 0, 'C', 1);
                 $pdf->Cell(40, 7, 'Payment Date', 1, 0, 'C', 1);
                 $pdf->Ln();
@@ -110,8 +129,12 @@ function generateStudentReport($db, $adno = null) {
                     $classTable = $transaction['class'];
                     $term = $transaction['term'];
                     
-                    $pdf->Cell(30, 6, $classTable, 1);
+                    // Replace class name based on mapping
+                    $classDisplayName = isset($classNameMapping[$classTable]) ? $classNameMapping[$classTable] : $classTable;
+
+                    $pdf->Cell(30, 6, $classDisplayName, 1);
                     $pdf->Cell(30, 6, $term, 1);
+                    $pdf->Cell(30, 6, $transaction['MpesaReceiptNumber'], 1);
                     $pdf->Cell(30, 6, $transaction['Amount'], 1);
                     $pdf->Cell(40, 6, $transaction['payment_date'], 1);
                     $pdf->Ln();
@@ -127,11 +150,11 @@ function generateStudentReport($db, $adno = null) {
                 }
 
                 // Calculate balance
-                $balanceMessage1= "School_Fees :".$total_fee_current ;
+                $balanceMessage1= "School_Fees :".$total_fee_current ." KES" ;
                 $pdf->Cell(0, 10, $balanceMessage1, 0, 1, 'R');
-                $balanceMessage1= "Total_paid :".$totalAmount  ;
+                $balanceMessage1= "Total_paid :".$totalAmount ." kES" ;
                 $pdf->Cell(0, 10, $balanceMessage1, 0, 1, 'R');
-                $balanceMessage = $totalAmount >= $total_fee_current ? "Balance_Paid: " . $totalAmount : "Balance Needed: " . ($total_fee_current - $totalAmount);
+                $balanceMessage = $totalAmount >= $total_fee_current ? "Excess_Paid: " .( $totalAmount-$total_fee_current ) ." KES": "Balance Needed: " . ($total_fee_current - $totalAmount)." KES";
                 $pdf->Cell(0, 10, $balanceMessage, 0, 1, 'R');
              
             } else {

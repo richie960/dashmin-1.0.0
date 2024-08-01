@@ -185,7 +185,7 @@
                             <i class="fa fa-chart-area fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">unpaid total</p>
-                                <h6 class="mb-0"><?php  echo $totalBalance ?></h6>
+                                <h6 class="mb-0"><?php  echo $totalBalance/2 ?></h6>
                             </div>
                         </div>
                     </div>
@@ -293,7 +293,7 @@
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
                     const adno = button.getAttribute('data-adno');
-                    fetch('send_reminder.php', {
+                    fetch('../send_reminder.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -329,7 +329,7 @@
                 });
 
                 if (adnos.length > 0) {
-                    fetch('send_multiple_reminders.php', {
+                    fetch('../send_multiple_reminders.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

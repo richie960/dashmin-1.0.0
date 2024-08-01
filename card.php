@@ -35,7 +35,7 @@ if ($resultTotalAmount->num_rows > 0) {
 }
 
 // 3. Calculate total balance for rows with status 0
-$sqlBalanceSum = "SELECT adno, class, term FROM studentfees WHERE status != 1";
+$sqlBalanceSum = "SELECT adno, class, term FROM studentfees WHERE status !=1 AND complete is NULL";
 $resultBalanceSum = $conn->query($sqlBalanceSum);
 
 if ($resultBalanceSum->num_rows > 0) {
@@ -50,7 +50,7 @@ if ($resultBalanceSum->num_rows > 0) {
 }
 
 // 4. Count rows in studentfees with status equal to 1
-$sqlCountStatusOne = "SELECT COUNT(*) AS count FROM studentfees WHERE status = 1";
+$sqlCountStatusOne = "SELECT COUNT(*) AS count FROM studentfees WHERE status = 1 AND complete is NULL";
 $resultCountStatusOne = $conn->query($sqlCountStatusOne);
 
 if ($resultCountStatusOne->num_rows > 0) {

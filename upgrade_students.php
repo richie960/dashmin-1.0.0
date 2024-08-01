@@ -71,6 +71,10 @@ while ($student = $resultStudents->fetch_assoc()) {
             // Insert balance into studentfees for the new class
             $sqlInsertBalance = "INSERT INTO studentfees (adno, class, term, Amount, payment_date) VALUES ('$adno', '$nextClassName', 'term1fees', '$balance', NOW())";
             $db->query($sqlInsertBalance);
+
+            $sqlUpdateCompleted = "UPDATE studentfees SET complete = 1 WHERE adno = '$adno' AND class = '$selectedClass' AND term = 'term3fees'";
+            $db->query($sqlUpdateCompleted);
+
             $successCount++;
             $details[] = "Student $adno has been successfully upgraded.";
         } else {

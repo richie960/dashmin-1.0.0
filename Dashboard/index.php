@@ -5,7 +5,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Path to the file to include
-$file = '../dashboard.php';
+$file = '../dashdash.php';
 
 // Check if the file exists
 if (file_exists($file)) {

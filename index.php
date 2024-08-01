@@ -109,7 +109,7 @@
             })
             .then(data => {
                 if (data.success) {
-                    window.location.href = 'dashboard.php'; // Redirect to dashboard or another page on successful login
+                    window.location.href = 'dashdash.php'; // Redirect to dashboard or another page on successful login
                 } else {
                     document.getElementById('message').textContent = data.message;
                 }

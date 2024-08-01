@@ -34,8 +34,8 @@
         <label for="classDropdown">Select Class:</label>
         <select class="form-control" id="classDropdown">
         <option value="classnine">Playgroup</option>
-        <option value="classseven">PP1</option>
-            <option value="classeight">PP2</option>
+        <option value="classeight">PP1</option>
+        <option value="classseven">PP2</option>
             <option value="classone">Class 1</option>
             <option value="classtwo">Class 2</option>
             <option value="classthree">Class 3</option>
@@ -232,8 +232,7 @@ $(document).ready(function() {
                     termsOptions += '<option value="term2fees">Term 2</option>';
                     termsOptions += '<option value="term3fees">Term 3</option>';
                 } else if (lastTerm === 'term3fees') {
-                    termsOptions += '<option value="term1fees">Term 1</option>';
-                    termsOptions += '<option value="term2fees">Term 2</option>';
+                    
                     termsOptions += '<option value="term3fees">Term 3</option>';
 
                 }
