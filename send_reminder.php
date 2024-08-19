@@ -23,7 +23,7 @@ $response = [];
 // Query student details from studentfees table
 $sqlStudentFees = "SELECT adno, class, term, status, last_reminder
                    FROM studentfees
-                   WHERE adno = ?";
+                   WHERE adno = ? AND complete IS NULL LIMIT 1";
 $stmtStudentFees = $conn->prepare($sqlStudentFees);
 if (!$stmtStudentFees) {
     die("Prepare failed: " . $conn->error);

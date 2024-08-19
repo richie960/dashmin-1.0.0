@@ -74,7 +74,7 @@ function calculateBalance($conn, $adno, $class, $term) {
     // Get total paid amount for the student in the specified class and term
     $sqlPaid = "SELECT SUM(Amount) AS totalPaid
                 FROM studentfees
-                WHERE adno = ? AND class = ? AND term = ?";
+                WHERE adno = ? AND class = ? AND term = ? AND complete IS NULL";
     $stmtPaid = $conn->prepare($sqlPaid);
     $stmtPaid->bind_param("sss", $adno, $class, $term);
     $stmtPaid->execute();

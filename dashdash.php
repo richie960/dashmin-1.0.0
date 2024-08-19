@@ -175,7 +175,7 @@
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                             <i class="fa fa-chart-bar fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">paid total</p>
+                                <p class="mb-2">Paid total</p>
                                 <h6 class="mb-0"><?php echo $totalAmount ?></h6>
                             </div>
                         </div>
@@ -184,8 +184,8 @@
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                             <i class="fa fa-chart-area fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">unpaid total</p>
-                                <h6 class="mb-0"><?php  echo $totalBalance/2 ?></h6>
+                                <p class="mb-2">Unpaid total</p>
+                                <h6 class="mb-0"><?php  echo $totalBalance ?></h6>
                             </div>
                         </div>
                     </div>
@@ -193,8 +193,8 @@
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                             <i class="fa fa-chart-pie fa-3x text-primary"></i>
                             <div class="ms-3">
-                                <p class="mb-2">Cleared</p>
-                                <h6 class="mb-0"><?php echo $countStatusOne?></h6>
+                                <p class="mb-2">Cleared-INV</p>
+                                <h6 class="mb-0"><?php echo $countStatusOne ?></h6>
                             </div>
                         </div>
                     </div>
@@ -293,7 +293,7 @@
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
                     const adno = button.getAttribute('data-adno');
-                    fetch('../send_reminder.php', {
+                    fetch('send_reminder.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -302,20 +302,28 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success) {
+                        if (Array.isArray(data) && data.length > 0) {
+            const data1 = data[0]; 
+                        if (data1.status ==="success") {
                             button.disabled = true;
                             button.textContent = 'Reminder Sent';
                             button.classList.remove('btn-primary');
                             button.classList.add('btn-secondary');
                             showMessage('Reminder sent successfully', 'success');
                         } else {
-                            showMessage('Reminder sent successfully', 'success');
+                            showMessage('Cooldown or inactive', 'error');
                         }
+            
+                    
+                    }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        showMessage('Reminders sent successfully', 'success');
+                        showMessage('Check your internet connection!!', 'error');
+
+                    
                     });
+                
                 });
             });
 
@@ -329,7 +337,7 @@
                 });
 
                 if (adnos.length > 0) {
-                    fetch('../send_multiple_reminders.php', {
+                    fetch('send_multiple_reminders.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -338,7 +346,9 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (status.success) {
+                        if (Array.isArray(data) && data.length > 0) {
+            const data1 = data[0]; 
+                        if (data1.status ==="success") {
                             checkboxes.forEach(checkbox => {
                                 checkbox.disabled = true;
                                 const row = checkbox.closest('tr');
@@ -352,12 +362,13 @@
                             });
                             showMessage('Reminders sent successfully', 'success');
                         } else {
-                             showMessage('Reminders sent successfully', 'success');
+                            showMessage('Cooldown or inactive', 'error');
                         }
+                    }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        showMessage('Reminders sent successfully', 'success');
+                        showMessage('Check your internet connection!!', 'error');
                     });
                 } else {
                     showMessage('No eligible reminders to send', 'error');
