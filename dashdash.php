@@ -45,7 +45,7 @@
         <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-light navbar-light">
-                <a href="index.php" class="navbar-brand mx-4 mb-3">
+                <a href="dashdash.php" class="navbar-brand mx-4 mb-3">
                     <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>Admin</h3>
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
@@ -59,14 +59,14 @@
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="dashboard.php" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <a href="dashdash.php" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Elements</a>
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="student/" class="dropdown-item">Credit</a>
                             <a href="Reports/" class="dropdown-item">Reports</a>
                             <a href="register/" class="dropdown-item">Registration</a>
-                            <a href="dashboard.php" class="dropdown-item">Reload</a>
+                            <a href="dashdash.php" class="dropdown-item">Reload</a>
                          
                         </div>
                     </div>
@@ -185,7 +185,7 @@
                             <i class="fa fa-chart-area fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Unpaid total</p>
-                                <h6 class="mb-0"><?php  echo $totalBalance ?></h6>
+                                <h6 class="mb-0"><?php  echo $totalFees-$totalAmount ?></h6>
                             </div>
                         </div>
                     </div>

@@ -58,6 +58,30 @@ if ($resultCountStatusOne->num_rows > 0) {
     $countStatusOne = $row['count'];
 }
 
+
+$totalFees = 0;
+
+
+// List of tables
+$tables = ['classone', 'classtwo', 'classthree', 'classfour', 'classfive', 'classsix', 'classseven', 'classeight', 'classnine'];
+
+// Loop through each table and sum the fees
+foreach ($tables as $table) {
+    $query = "SELECT SUM(term1fees + term2fees + term3fees) AS total FROM $table";
+    $result = $conn->query($query);
+
+    if ($result) {
+        $row = $result->fetch_assoc();
+        // Add the sum from the current table to the total fees
+        $totalFees += $row['total'];
+    }
+}
+
+// Close the connection
+
+
+// Output the total fees
+//echo "The total fees across all classes is: " . $totalFees;
 // Close the database connection
 $conn->close();
 
@@ -96,4 +120,7 @@ function calculateBalance($conn, $adno, $class, $term) {
 
     return $balance;
 }
+
+
+
 ?>
