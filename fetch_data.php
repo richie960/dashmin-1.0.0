@@ -19,7 +19,7 @@ $result_students = $conn->query($sql_students);
 $student_data = array();
 
 if ($result_students->num_rows > 0) {
-    while($row = $result_students->fetch_assoc()) {
+    while ($row = $result_students->fetch_assoc()) {
         $year = date('Y', strtotime($row["registration_date"]));
         if (!isset($student_data[$year])) {
             $student_data[$year] = 0;
@@ -35,7 +35,7 @@ $result_fees = $conn->query($sql_fees);
 $fee_data = array();
 
 if ($result_fees->num_rows > 0) {
-    while($row = $result_fees->fetch_assoc()) {
+    while ($row = $result_fees->fetch_assoc()) {
         $year = date('Y', strtotime($row["payment_date"]));
         if (!isset($fee_data[$year])) {
             $fee_data[$year] = array("total_fees" => 0, "count" => 0);

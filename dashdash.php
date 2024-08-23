@@ -185,7 +185,7 @@
                             <i class="fa fa-chart-area fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Unpaid total</p>
-                                <h6 class="mb-0"><?php  echo $totalFees-$totalAmount ?></h6>
+                                <h6 class="mb-0"><?php  echo $totalBalance?></h6>
                             </div>
                         </div>
                     </div>

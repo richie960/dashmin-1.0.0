@@ -26,7 +26,7 @@ if ($resultCountStudents->num_rows > 0) {
 }
 
 // 2. Calculate total Amount in studentfees table
-$sqlTotalAmount = "SELECT SUM(Amount) AS totalAmount FROM studentfees";
+$sqlTotalAmount = "SELECT SUM(Amount) AS totalAmount FROM studentfees WHERE status = 1 AND complete IS NULL";
 $resultTotalAmount = $conn->query($sqlTotalAmount);
 
 if ($resultTotalAmount->num_rows > 0) {
@@ -35,7 +35,7 @@ if ($resultTotalAmount->num_rows > 0) {
 }
 
 // 3. Calculate total balance for rows with status 0
-$sqlBalanceSum = "SELECT adno, class, term FROM studentfees WHERE status !=1 AND complete is NULL";
+$sqlBalanceSum = "SELECT DISTINCT adno, class, term FROM studentfees WHERE status != 1 AND complete IS NULL";
 $resultBalanceSum = $conn->query($sqlBalanceSum);
 
 if ($resultBalanceSum->num_rows > 0) {
@@ -44,13 +44,15 @@ if ($resultBalanceSum->num_rows > 0) {
         $class = $row['class'];
         $term = $row['term'];
         
+        // Calculate balance for this unique student, class, and term
         $balance = calculateBalance($conn, $adno, $class, $term);
         $totalBalance += $balance;
     }
 }
 
+
 // 4. Count rows in studentfees with status equal to 1
-$sqlCountStatusOne = "SELECT COUNT(*) AS count FROM studentfees WHERE status = 1 AND complete is NULL";
+$sqlCountStatusOne = "SELECT COUNT(DISTINCT adno, class, term) AS count FROM studentfees WHERE status = 1 AND complete IS NULL";
 $resultCountStatusOne = $conn->query($sqlCountStatusOne);
 
 if ($resultCountStatusOne->num_rows > 0) {
@@ -59,23 +61,6 @@ if ($resultCountStatusOne->num_rows > 0) {
 }
 
 
-$totalFees = 0;
-
-
-// List of tables
-$tables = ['classone', 'classtwo', 'classthree', 'classfour', 'classfive', 'classsix', 'classseven', 'classeight', 'classnine'];
-
-// Loop through each table and sum the fees
-foreach ($tables as $table) {
-    $query = "SELECT SUM(term1fees + term2fees + term3fees) AS total FROM $table";
-    $result = $conn->query($query);
-
-    if ($result) {
-        $row = $result->fetch_assoc();
-        // Add the sum from the current table to the total fees
-        $totalFees += $row['total'];
-    }
-}
 
 // Close the connection
 
@@ -93,12 +78,14 @@ $conn->close();
 
 // Function to calculate balance for a student in a specific class and term
 function calculateBalance($conn, $adno, $class, $term) {
+    // Initialize the balance
     $balance = 0;
 
-    // Get total paid amount for the student in the specified class and term
+    // Get the total paid amount for the student, ensuring no double-counting for the same `adno`, `class`, `term`
     $sqlPaid = "SELECT SUM(Amount) AS totalPaid
-                FROM studentfees
-                WHERE adno = ? AND class = ? AND term = ? AND complete IS NULL";
+                FROM (SELECT DISTINCT adno, class, term, Amount
+                      FROM studentfees
+                      WHERE adno = ? AND class = ? AND term = ? AND complete IS NULL) AS distinct_payments";
     $stmtPaid = $conn->prepare($sqlPaid);
     $stmtPaid->bind_param("sss", $adno, $class, $term);
     $stmtPaid->execute();
@@ -108,7 +95,7 @@ function calculateBalance($conn, $adno, $class, $term) {
 
     // Get term fees for the class and term from respective class table (classone, classtwo, etc.)
     $termColumn = $term;
-    $sqlTermFees = "SELECT {$termColumn} FROM {$class}";
+    $sqlTermFees = "SELECT {$termColumn} FROM {$class} LIMIT 1"; // Ensure only one row is fetched
     $stmtTermFees = $conn->prepare($sqlTermFees);
     $stmtTermFees->execute();
     $stmtTermFees->bind_result($termFees);
